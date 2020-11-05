@@ -20,11 +20,12 @@ from senteval.tools.validation import KFoldClassifier
 
 
 class TRECEval(object):
-    def __init__(self, task_path, seed=1111):
+    def __init__(self, task_path, inference=False,seed=1111):
         logging.info('***** Transfer task : TREC *****\n\n')
         self.seed = seed
         self.train = self.loadFile(os.path.join(task_path, 'train_5500.label'))
         self.test = self.loadFile(os.path.join(task_path, 'TREC_10.label'))
+        self.inference = inference
 
     def do_prepare(self, params, prepare):
         samples = self.train['X'] + self.test['X']
@@ -82,8 +83,9 @@ class TRECEval(object):
                               {'X': test_embeddings,
                                'y': np.array(test_labels)},
                               config_classifier)
-        devacc, testacc, _ = clf.run()
+        classifier, devacc, testacc, _ = clf.run()
         logging.debug('\nDev acc : {0} Test acc : {1} \
             for TREC\n'.format(devacc, testacc))
         return {'devacc': devacc, 'acc': testacc,
-                'ndev': len(self.train['X']), 'ntest': len(self.test['X'])}
+                'ndev': len(self.train['X']), 'ntest': len(self.test['X']),
+                'classifier': classifier, 'X': np.vstack((train_embeddings, test_embeddings)), 'Y': np.array(train_labels + test_labels)}

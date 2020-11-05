@@ -33,7 +33,7 @@ class PyTorchClassifier(object):
         self.nclasses = nclasses
         self.l2reg = l2reg
         self.batch_size = batch_size
-        self.cudaEfficient = cudaEfficient
+        self.cudaEfficient = False
 
     def prepare_split(self, X, y, validation_data=None, validation_split=None):
         # Preparing validation data
@@ -48,8 +48,7 @@ class PyTorchClassifier(object):
             trainX, trainy = X[trainidx], y[trainidx]
             devX, devy = X[devidx], y[devidx]
 
-        device = torch.device('cpu') if self.cudaEfficient else torch.device('cuda')
-
+        device = torch.device('cpu') #if self.cudaEfficient else torch.device('cuda')
         trainX = torch.from_numpy(trainX).to(device, dtype=torch.float32)
         trainy = torch.from_numpy(trainy).to(device, dtype=torch.int64)
         devX = torch.from_numpy(devX).to(device, dtype=torch.float32)
@@ -95,8 +94,10 @@ class PyTorchClassifier(object):
                 ybatch = y[idx]
 
                 if self.cudaEfficient:
-                    Xbatch = Xbatch.cuda()
-                    ybatch = ybatch.cuda()
+                    Xbatch = Xbatch.to(torch.device('cpu'))
+
+                    ybatch = ybatch.to(torch.device('cpu'))
+
                 output = self.model(Xbatch)
                 # loss
                 loss = self.loss_fn(output, ybatch)
@@ -112,15 +113,19 @@ class PyTorchClassifier(object):
         self.model.eval()
         correct = 0
         if not isinstance(devX, torch.cuda.FloatTensor) or self.cudaEfficient:
-            devX = torch.FloatTensor(devX).cuda()
-            devy = torch.LongTensor(devy).cuda()
+            devX = torch.FloatTensor(devX).to(torch.device('cpu'))
+
+            devy = torch.LongTensor(devy).to(torch.device('cpu'))
+
         with torch.no_grad():
             for i in range(0, len(devX), self.batch_size):
                 Xbatch = devX[i:i + self.batch_size]
                 ybatch = devy[i:i + self.batch_size]
                 if self.cudaEfficient:
-                    Xbatch = Xbatch.cuda()
-                    ybatch = ybatch.cuda()
+                    Xbatch = Xbatch.to(torch.device('cpu'))
+
+                    ybatch = ybatch.to(torch.device('cpu'))
+
                 output = self.model(Xbatch)
                 pred = output.data.max(1)[1]
                 correct += pred.long().eq(ybatch.data.long()).sum().item()
@@ -130,7 +135,8 @@ class PyTorchClassifier(object):
     def predict(self, devX):
         self.model.eval()
         if not isinstance(devX, torch.cuda.FloatTensor):
-            devX = torch.FloatTensor(devX).cuda()
+            devX = torch.FloatTensor(devX).to(torch.device('cpu'))
+
         yhat = np.array([])
         with torch.no_grad():
             for i in range(0, len(devX), self.batch_size):
@@ -181,20 +187,21 @@ class MLP(PyTorchClassifier):
         self.max_epoch = 200 if "max_epoch" not in params else params["max_epoch"]
         self.dropout = 0. if "dropout" not in params else params["dropout"]
         self.batch_size = 64 if "batch_size" not in params else params["batch_size"]
+        self.device = torch.device('cpu') #if self.cudaEfficient else torch.device('cuda')
 
         if params["nhid"] == 0:
             self.model = nn.Sequential(
                 nn.Linear(self.inputdim, self.nclasses),
-            ).cuda()
+            ).to(self.device)
         else:
             self.model = nn.Sequential(
                 nn.Linear(self.inputdim, params["nhid"]),
                 nn.Dropout(p=self.dropout),
                 nn.Sigmoid(),
                 nn.Linear(params["nhid"], self.nclasses),
-            ).cuda()
+            ).to(self.device)
 
-        self.loss_fn = nn.CrossEntropyLoss().cuda()
+        self.loss_fn = nn.CrossEntropyLoss().to(self.device)
         self.loss_fn.size_average = False
 
         optim_fn, optim_params = utils.get_optimizer(self.optim)

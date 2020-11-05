@@ -13,6 +13,10 @@ Validation and classification
 
 """
 from __future__ import absolute_import, division, unicode_literals
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
 
 import logging
 import numpy as np
@@ -104,7 +108,7 @@ class InnerKFoldClassifier(object):
 
         devaccuracy = round(np.mean(self.devresults), 2)
         testaccuracy = round(np.mean(self.testresults), 2)
-        return devaccuracy, testaccuracy
+        return clf, devaccuracy, testaccuracy
 
 
 class KFoldClassifier(object):
@@ -178,7 +182,7 @@ class KFoldClassifier(object):
         testaccuracy = clf.score(self.test['X'], self.test['y'])
         testaccuracy = round(100*testaccuracy, 2)
 
-        return devaccuracy, testaccuracy, yhat
+        return clf, devaccuracy, testaccuracy, yhat
 
 
 class SplitClassifier(object):
