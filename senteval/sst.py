@@ -87,10 +87,13 @@ class SSTEval(object):
                                  'test': sst_embed['test']['y']},
                               config=config_classifier)
 
-        devacc, testacc = clf.run()
+        classifier, devacc, testacc = clf.run()
         logging.debug('\nDev acc : {0} Test acc : {1} for \
             SST {2} classification\n'.format(devacc, testacc, self.task_name))
 
         return {'devacc': devacc, 'acc': testacc,
                 'ndev': len(sst_embed['dev']['X']),
-                'ntest': len(sst_embed['test']['X'])}
+                'ntest': len(sst_embed['test']['X']),
+                'classifier': classifier,
+                'X': np.vstack((sst_embed['train']['X'], sst_embed['dev']['X'], sst_embed['test']['X'])),
+                'Y': np.concatenate((sst_embed['train']['y'], sst_embed['dev']['y'], sst_embed['test']['y']), axis=0)}
