@@ -103,5 +103,5 @@ class MRPCEval(object):
         return {'devacc': devacc, 'acc': testacc, 'f1': testf1,
                 'ndev': len(trainA), 'ntest': len(testA),
                 'classifier': classifier,
-                'X': np.vstack((trainF, testF)),
-                'Y': np.concatenate((trainY, testY), axis=0)}
+                'X_train': trainF,
+                'X_test': testF}

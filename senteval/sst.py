@@ -95,5 +95,6 @@ class SSTEval(object):
                 'ndev': len(sst_embed['dev']['X']),
                 'ntest': len(sst_embed['test']['X']),
                 'classifier': classifier,
-                'X': np.vstack((sst_embed['train']['X'], sst_embed['dev']['X'], sst_embed['test']['X'])),
-                'Y': np.concatenate((sst_embed['train']['y'], sst_embed['dev']['y'], sst_embed['test']['y']), axis=0)}
+                'X_train': sst_embed['train']['X'],
+                #'Y': np.concatenate((sst_embed['train']['y'], sst_embed['dev']['y'], sst_embed['test']['y']), axis=0)
+                'X_test': sst_embed['test']['X']}

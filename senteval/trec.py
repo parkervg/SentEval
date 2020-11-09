@@ -88,4 +88,7 @@ class TRECEval(object):
             for TREC\n'.format(devacc, testacc))
         return {'devacc': devacc, 'acc': testacc,
                 'ndev': len(self.train['X']), 'ntest': len(self.test['X']),
-                'classifier': classifier, 'X': np.vstack((train_embeddings, test_embeddings)), 'Y': np.array(train_labels + test_labels)}
+                'classifier': classifier,
+                'X_train': train_embeddings, 
+                #'Y': np.array(train_labels + test_labels)
+                'X_test': test_embeddings}

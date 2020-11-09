@@ -54,11 +54,13 @@ class BinaryClassifierEval(object):
                   'classifier': params.classifier,
                   'nhid': params.nhid, 'kfold': params.kfold}
         clf = InnerKFoldClassifier(enc_input, np.array(sorted_labels), config)
-        classifier, devacc, testacc = clf.run()
+        classifier, X_train, X_test, devacc, testacc = clf.run()
         logging.debug('Dev acc : {0} Test acc : {1}\n'.format(devacc, testacc))
         return {'devacc': devacc, 'acc': testacc, 'ndev': self.n_samples,
                 'ntest': self.n_samples,
-                'classifier': classifier, 'X': enc_input, 'Y': np.array(sorted_labels)}
+                'classifier': classifier,
+                'X_train': X_train,
+                'X_test': X_test}
 
 
 class CREval(BinaryClassifierEval):
