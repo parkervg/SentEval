@@ -97,4 +97,5 @@ class SSTEval(object):
                 'classifier': classifier,
                 'X_train': sst_embed['train']['X'],
                 #'Y': np.concatenate((sst_embed['train']['y'], sst_embed['dev']['y'], sst_embed['test']['y']), axis=0)
-                'X_test': sst_embed['test']['X']}
+                'X_test': sst_embed['test']['X'],
+                'text': self.sst_data['train']['X']}

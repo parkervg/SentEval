@@ -89,6 +89,7 @@ class TRECEval(object):
         return {'devacc': devacc, 'acc': testacc,
                 'ndev': len(self.train['X']), 'ntest': len(self.test['X']),
                 'classifier': classifier,
-                'X_train': train_embeddings, 
+                'X_train': train_embeddings,
                 #'Y': np.array(train_labels + test_labels)
-                'X_test': test_embeddings}
+                'X_test': test_embeddings,
+                'text': train_samples}

@@ -60,7 +60,8 @@ class BinaryClassifierEval(object):
                 'ntest': self.n_samples,
                 'classifier': classifier,
                 'X_train': X_train,
-                'X_test': X_test}
+                'X_test': X_test,
+                'text': sorted_samples}
 
 
 class CREval(BinaryClassifierEval):

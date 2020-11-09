@@ -104,4 +104,5 @@ class MRPCEval(object):
                 'ndev': len(trainA), 'ntest': len(testA),
                 'classifier': classifier,
                 'X_train': trainF,
-                'X_test': testF}
+                'X_test': testF,
+                'text': text_data['A'] + text_data['B']}
